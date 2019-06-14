@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{ APP_NAME }}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link href="/css/custom.css" rel="stylesheet">
+    {% block css %}{% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/">{{ APP_NAME }}</a>
+            {% if(logo) %}<a class="navbar-brand" href="/"><img src="/images/{{logo}}" alt="Logo" height="45" /></a>{% endif %}
+        </div>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/file">File Upload <span class="sr-only">(current)</span></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+{% block content %}{% endblock %}
+<hr />
+<footer>
+{% if(disclaimer) %}
+{% autoescape off %}
+{{ disclaimer }}
+{% endautoescape %}
+{% endif %}
+{% if(copyright) %}
+{% autoescape off %}
+{{ copyright }}
+{% endautoescape %}
+{% endif %}
+</footer>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap.native@2.0.15/dist/bootstrap-native-v4.min.js"></script>
+{% block js %}{% endblock %}
+</body>
+</html>
