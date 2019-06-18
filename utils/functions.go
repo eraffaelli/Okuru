@@ -156,7 +156,7 @@ func SetPassword(password string, ttl int, views int, deletable bool) (string, *
 /*
 https://gist.github.com/pohzipohzi/a202f8fb7cc30e33176dd97a9def5aac
 https://www.alexedwards.net/blog/working-with-redis
- */
+*/
 func GetPassword(p *models.Password) (*models.Password, *echo.HTTPError) {
 	pool := NewPool()
 	c := pool.Get()
@@ -455,11 +455,31 @@ func GetFile(f *models.File) *echo.HTTPError {
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
 
-	if vc <= f.Views {
+	if vc >= f.Views {
+		_, err := c.Do("DEL", REDIS_PREFIX + "file_" + storageKey)
+		if err != nil {
+			log.Error("SetFile() Redis err DEL main key : %+v\n", err)
+			return echo.NewHTTPError(http.StatusNotFound)
+		}
+		if f.PasswordProvided {
+			_, err := c.Do("DEL", REDIS_PREFIX + f.PasswordProvidedKey)
+			if err != nil {
+				log.Error("SetFile() Redis err DEL password provided key : %+v\n", err)
+				return echo.NewHTTPError(http.StatusNotFound)
+			}
+		}
+	} else {
 		_, err := c.Do("HSET", REDIS_PREFIX + "file_" + storageKey, "views_count", vc)
 		if err != nil {
 			log.Error("SetFile() Redis err SET views count : %+v\n", err)
 			return echo.NewHTTPError(http.StatusNotFound)
+		}
+		if f.PasswordProvided {
+			_, err := c.Do("HSET", REDIS_PREFIX + f.PasswordProvidedKey, "views_count", vc)
+			if err != nil {
+				log.Error("SetFile() Redis err SET views count password provided error : %+v\n", err)
+				return echo.NewHTTPError(http.StatusNotFound)
+			}
 		}
 	}
 	f.Views = vcLeft
