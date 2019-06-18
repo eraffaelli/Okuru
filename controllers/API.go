@@ -18,7 +18,7 @@ ttl: (optional) number seconds, min: 300, max: 604800, default: 3600 (one hour)
 views: (optional) number between 1 and 100
 deletable: (optional) boolean (false, true), default: false
 For example with the following command:
-curl -X POST -H "Content-Type:application/json" -d '{"password":"password-here","ttl":seconds, "views":views, "deletable": true}' ` + GetBaseUrl(context) + "api/v1"
+curl -X POST -H "Content-Type:application/json" -d '{"password":"password-here","ttl":seconds, "views":views, "deletable": true}' ` + GetBaseUrl(context) + "/api/v1"
 	return context.String(http.StatusOK, help)
 }
 

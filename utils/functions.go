@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"github.com/eraffaelli/Okuru/models"
 	"github.com/fernet/fernet-go"
 	"github.com/garyburd/redigo/redis"
@@ -64,9 +65,12 @@ func GetTTLText(ttl int) (ttlText string) {
  * Return splitted token
  * @param token
  */
-func ParseToken(token string) (string, string) {
+func ParseToken(token string) (string, string, error) {
 	tokenFragments := strings.Split(token, TOKEN_SEPARATOR)
-	return tokenFragments[0], tokenFragments[1]
+	if len(tokenFragments) == 0 {
+		return "", "", errors.New("not enough token fragments")
+	}
+	return tokenFragments[0], tokenFragments[1], nil
 }
 
 /**
@@ -161,7 +165,10 @@ func GetPassword(p *models.Password) (*models.Password, *echo.HTTPError) {
 		return nil, echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	storageKey, decryptionKey := ParseToken(p.PasswordKey)
+	storageKey, decryptionKey, err := ParseToken(p.PasswordKey)
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusNotFound)
+	}
 	if decryptionKey == "" {
 		return nil, echo.NewHTTPError(http.StatusNotFound)
 	}
@@ -231,7 +238,10 @@ func RemovePassword(p *models.Password) *echo.HTTPError {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	storageKey, _ := ParseToken(p.PasswordKey)
+	storageKey, _, err := ParseToken(p.PasswordKey)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
 	if storageKey == "" {
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
@@ -371,7 +381,10 @@ func RetrieveFilePassword(f *models.File) *echo.HTTPError {
 		return echo.NewHTTPError(http.StatusInternalServerError)
 	}
 
-	storageKey, decryptionKey := ParseToken(f.FileKey)
+	storageKey, decryptionKey, err := ParseToken(f.FileKey)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
 	if decryptionKey == "" {
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
@@ -416,7 +429,10 @@ func GetFile(f *models.File) *echo.HTTPError {
 	c := pool.Get()
 	defer c.Close()
 
-	storageKey, decryptionKey := ParseToken(f.FileKey)
+	storageKey, decryptionKey, err := ParseToken(f.FileKey)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
 	if decryptionKey == "" {
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
@@ -433,7 +449,6 @@ func GetFile(f *models.File) *echo.HTTPError {
 		vcLeft = 0
 	}
 
-	var err error
 	f.TTL, err = redis.Int(c.Do("TTL", REDIS_PREFIX + "file_" + storageKey))
 	if err != nil {
 		log.Error("SetFile() Redis err GET views count TTL : %+v\n", err)
@@ -465,7 +480,10 @@ func RemoveFile(f *models.File) *echo.HTTPError {
 	defer c.Close()
 	println("RemoveFile")
 
-	storageKey, _ := ParseToken(f.FileKey)
+	storageKey, _, err := ParseToken(f.FileKey)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
 	if storageKey == "" {
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
