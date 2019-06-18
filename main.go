@@ -17,7 +17,7 @@ import (
 var DebugLevel bool
 
 func Flags() {
-	pflag.BoolVar(&DebugLevel, "debug", true, "--debug")
+	pflag.BoolVar(&DebugLevel, "debug", false, "--debug")
 	defer pflag.Parse()
 	return
 }
@@ -38,6 +38,7 @@ func init() {
 	// Output to stdout instead of the default stderr
 	// Can be any io.Writer, see below for File example
 	log.SetOutput(os.Stdout)
+
 
 	if DebugLevel == true {
 		log.SetLevel(log.DebugLevel)
