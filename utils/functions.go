@@ -61,6 +61,17 @@ func GetTTLText(ttl int) (ttlText string) {
 	return
 }
 
+func GetMaxFileSizeText() string {
+	size := MaxFileSize / 1024 / 1024
+	var text string
+	if size >= 1024 {
+		text = strconv.FormatInt(size / 1024, 10) + " GB"
+	} else {
+		text = strconv.FormatInt(size, 10) + " MB"
+	}
+	return text
+}
+
 /**
  * Return splitted token
  * @param token

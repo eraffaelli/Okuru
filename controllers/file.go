@@ -18,7 +18,7 @@ import (
 func IndexFile(context echo.Context) error {
 	delete(DataContext, "errors")
 	DataContext["maxFileSize"] = MaxFileSize
-	DataContext["maxFileSizeMb"] = MaxFileSize / 1024 / 1024
+	DataContext["maxFileSizeText"] = GetMaxFileSizeText()
 
 	return context.Render(http.StatusOK, "index_file.html", DataContext)
 }
