@@ -78,7 +78,7 @@ func GetMaxFileSizeText() string {
  */
 func ParseToken(token string) (string, string, error) {
 	tokenFragments := strings.Split(token, TOKEN_SEPARATOR)
-	if len(tokenFragments) == 0 {
+	if len(tokenFragments) != 2 {
 		return "", "", errors.New("not enough token fragments")
 	}
 	return tokenFragments[0], tokenFragments[1], nil
