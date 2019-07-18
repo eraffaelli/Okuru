@@ -31,10 +31,10 @@ func ReadFile(context echo.Context) error {
 	if f.FileKey == "" {
 		return context.NoContent(http.StatusNotFound)
 	}
-	if f.FileKey == "favicon.ico" {
+	if strings.Contains(f.FileKey,"favicon.ico") {
 		return nil
 	}
-	if f.FileKey == "robots.txt" {
+	if strings.Contains(f.FileKey,"robots.txt") {
 		return nil
 	}
 
@@ -77,10 +77,10 @@ func DownloadFile(context echo.Context) error {
 	if f.FileKey == "" {
 		return context.NoContent(http.StatusNotFound)
 	}
-	if f.FileKey == "favicon.ico" {
+	if strings.Contains(f.FileKey,"favicon.ico") {
 		return nil
 	}
-	if f.FileKey == "robots.txt" {
+	if strings.Contains(f.FileKey,"robots.txt") {
 		return nil
 	}
 

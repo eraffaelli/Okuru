@@ -23,10 +23,10 @@ func ReadIndex(context echo.Context) error {
 	if p.PasswordKey == "" {
 		return context.NoContent(http.StatusNotFound)
 	}
-	if p.PasswordKey == "favicon.ico" {
+	if strings.Contains(p.PasswordKey,"favicon.ico") {
 		return nil
 	}
-	if p.PasswordKey == "robots.txt" {
+	if strings.Contains(p.PasswordKey,"robots.txt") {
 		return nil
 	}
 

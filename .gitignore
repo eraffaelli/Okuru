@@ -16,3 +16,4 @@
 .service
 locustfile.py
 locustfile.pyc
+data
