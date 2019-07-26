@@ -6,7 +6,6 @@ package main
 import (
 	"github.com/eraffaelli/Okuru/router"
 	. "github.com/eraffaelli/Okuru/utils"
-	"github.com/flosch/pongo2"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/pflag"
 	"math/rand"
@@ -53,10 +52,6 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	e:= router.New()
-	err := pongo2.DefaultLoader.SetBaseDir("views")
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	e.Logger.Fatal(e.Start(":" + APP_PORT))
 }

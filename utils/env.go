@@ -73,7 +73,6 @@ func init() {
 	}
 
 	FILEFOLDER, _ = filepath.Abs(FILEFOLDER)
-	// TODO: check if trailing slash is a problem or not
 	var err error
 	MaxFileSize, err = strconv.ParseInt(MAXFILESIZE, 10, 64)
 	if err != nil {

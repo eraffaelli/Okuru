@@ -1,0 +1,15 @@
+[Unit]
+Description=Okuru
+
+[Service]
+Type=simple
+EnvironmentFile=/opt/go/bin/Okuru/.env
+ExecStart=/opt/go/bin/Okuru/okuru
+Restart=always
+RestartSec=5s
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=Okuru
+
+[Install]
+WantedBy=multi-user.target

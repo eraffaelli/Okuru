@@ -4,6 +4,8 @@ import (
 	"errors"
 	"github.com/eraffaelli/Okuru/routes"
 	log "github.com/sirupsen/logrus"
+	"os"
+	"path/filepath"
 
 	"github.com/flosch/pongo2"
 	"github.com/labstack/echo"
@@ -29,11 +31,6 @@ func (r Renderer) Render(w io.Writer, name string, data interface{}, c echo.Cont
 	var ctx pongo2.Context
 	var t *pongo2.Template
 	var err error
-
-	err = pongo2.DefaultLoader.SetBaseDir("views")
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	if data != nil {
 		var ok bool
@@ -67,6 +64,17 @@ func New() *echo.Echo {
 	renderer := Renderer {
 		Debug: true,
 	}
+
+	ex, err := os.Executable()
+	if err != nil {
+		log.Fatal(err)
+	}
+	rootPath := filepath.Dir(ex)
+	err = pongo2.DefaultLoader.SetBaseDir(rootPath + "/views")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	e := echo.New()
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Renderer = renderer
@@ -89,7 +97,7 @@ func New() *echo.Echo {
 	fileGroup := e.Group("/file")
 
 	//Route => handler
-	e.Static("/", "public")//this need to be before routing
+	e.Static("/", rootPath + "/public")//this need to be before routing
 	routes.Index(e)
 	routes.Password(apiGroup)
 	routes.File(fileGroup)
