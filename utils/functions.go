@@ -462,33 +462,44 @@ func GetFile(f *models.File) *echo.HTTPError {
 
 	f.TTL, err = redis.Int(c.Do("TTL", REDIS_PREFIX + "file_" + storageKey))
 	if err != nil {
-		log.Error("SetFile() Redis err GET views count TTL : %+v\n", err)
+		log.Error("GetFile() Redis err GET views count TTL : %+v\n", err)
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
+
+	if f.TTL == -2 {
+		log.Error("GetFile() Redis err TTL : %+v\n", err)
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
+
+	f.PasswordProvided, err = redis.Bool(c.Do("HGET", REDIS_PREFIX + "file_" +  storageKey, "provided"))
+	if err != nil {
+		log.Error("GetFile() Redis err GET file password provided value : %+v\n", err)
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
 
 	if vc >= f.Views {
 		_, err := c.Do("DEL", REDIS_PREFIX + "file_" + storageKey)
 		if err != nil {
-			log.Error("SetFile() Redis err DEL main key : %+v\n", err)
+			log.Error("GetFile() Redis err DEL main key : %+v\n", err)
 			return echo.NewHTTPError(http.StatusNotFound)
 		}
 		if f.PasswordProvided {
 			_, err := c.Do("DEL", REDIS_PREFIX + f.PasswordProvidedKey)
 			if err != nil {
-				log.Error("SetFile() Redis err DEL password provided key : %+v\n", err)
+				log.Error("GetFile() Redis err DEL password provided key : %+v\n", err)
 				return echo.NewHTTPError(http.StatusNotFound)
 			}
 		}
 	} else {
 		_, err := c.Do("HSET", REDIS_PREFIX + "file_" + storageKey, "views_count", vc)
 		if err != nil {
-			log.Error("SetFile() Redis err SET views count : %+v\n", err)
+			log.Error("GetFile() Redis err SET views count : %+v\n", err)
 			return echo.NewHTTPError(http.StatusNotFound)
 		}
 		if f.PasswordProvided {
 			_, err := c.Do("HSET", REDIS_PREFIX + f.PasswordProvidedKey, "views_count", vc)
 			if err != nil {
-				log.Error("SetFile() Redis err SET views count password provided error : %+v\n", err)
+				log.Error("GetFile() Redis err SET views count password provided error : %+v\n", err)
 				return echo.NewHTTPError(http.StatusNotFound)
 			}
 		}

@@ -63,6 +63,8 @@ func ReadFile(context echo.Context) error {
 
 	if f.PasswordProvided == true {
 		DataContext["passwordNeeded"] = true
+	} else {
+		DataContext["passwordNeeded"] = false
 	}
 
 	//Todo: change text "is up for" is ttl < 3600
