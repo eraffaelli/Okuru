@@ -20,6 +20,10 @@ To test :
 * Copy the .env.dist file to .env file or edit it with your configuration. Source it (``set -a && source .env && set +a`` for example on linux).
 * Build and run
 
+To fix problem with lz4 https://github.com/mholt/archiver/issues/195
+
+``go get github.com/pierrec/lz4 && cd $GOPATH/src/github.com/pierrec/lz4 && git fetch && git checkout v3.0.1``
+
 ## Configuration
 
 You can configure the following via environment variables.
