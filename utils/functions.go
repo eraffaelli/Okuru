@@ -197,66 +197,6 @@ func RetrievePassword(p *models.Password) *echo.HTTPError {
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
 
-	password, err := Decrypt(p.Token, decryptionKey, p.TTL)
-	if err != nil {
-		log.Error("Error while decrypting password")
-		return echo.NewHTTPError(http.StatusNotFound)
-	}
-	p.Password = password
-
-	/*if f.ViewsCount >= f.Views {
-		_, err := c.Do("DEL", REDIS_PREFIX + "file_" + storageKey)
-		if err != nil {
-			log.Error("SetFile() Redis err DEL main key : %+v\n", err)
-			return echo.NewHTTPError(http.StatusNotFound)
-		}
-	}*/
-	_, err = c.Do("DEL", REDIS_PREFIX+storageKey)
-	if err != nil {
-		log.Error("SetFile() Redis err DEL main key : %+v\n", err)
-		return echo.NewHTTPError(http.StatusNotFound)
-	}
-
-	return nil
-}
-
-/*
-https://gist.github.com/pohzipohzi/a202f8fb7cc30e33176dd97a9def5aac
-https://www.alexedwards.net/blog/working-with-redis
-*/
-func GetPassword(p *models.Password) *echo.HTTPError {
-	pool := NewPool()
-	c := pool.Get()
-	defer c.Close()
-	if Ping(c) == false {
-		return echo.NewHTTPError(http.StatusInternalServerError)
-	}
-
-	storageKey, decryptionKey, err := ParseToken(p.PasswordKey)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusNotFound)
-	}
-	if decryptionKey == "" {
-		return echo.NewHTTPError(http.StatusNotFound)
-	}
-
-	v, err := redis.Values(c.Do("HGETALL", REDIS_PREFIX+storageKey))
-	if err != nil {
-		log.Error("SetPassword() Redis err set : %+v\n", err)
-		return echo.NewHTTPError(http.StatusInternalServerError)
-	}
-
-	err = redis.ScanStruct(v, p)
-	if err != nil {
-		log.Error("SetPassword() Redis err scan struct : %+v\n", err)
-		return echo.NewHTTPError(http.StatusInternalServerError)
-	}
-
-	if string(p.Token) == "" {
-		log.Error("Empty token")
-		return echo.NewHTTPError(http.StatusNotFound)
-	}
-
 	vc := p.ViewsCount + 1
 	vcLeft := p.Views - vc
 	if vcLeft <= 0 {
@@ -290,6 +230,46 @@ func GetPassword(p *models.Password) *echo.HTTPError {
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
 	p.Password = password
+
+	return nil
+}
+
+/*
+https://gist.github.com/pohzipohzi/a202f8fb7cc30e33176dd97a9def5aac
+https://www.alexedwards.net/blog/working-with-redis
+*/
+func GetPassword(p *models.Password) *echo.HTTPError {
+	pool := NewPool()
+	c := pool.Get()
+	defer c.Close()
+	if Ping(c) == false {
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
+	storageKey, decryptionKey, err := ParseToken(p.PasswordKey)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
+	if decryptionKey == "" {
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
+
+	v, err := redis.Values(c.Do("HGETALL", REDIS_PREFIX+storageKey))
+	if err != nil {
+		log.Error("GetPassword() Redis err set : %+v\n", err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
+	err = redis.ScanStruct(v, p)
+	if err != nil {
+		log.Error("GetPassword() Redis err scan struct : %+v\n", err)
+		return echo.NewHTTPError(http.StatusInternalServerError)
+	}
+
+	if string(p.Token) == "" {
+		log.Error("Empty token")
+		return echo.NewHTTPError(http.StatusNotFound)
+	}
 
 	return nil
 }
