@@ -64,6 +64,10 @@ Just a little note, I'm not really familiar with Go yet (I'm learning on the job
 * [Labstack's Echo framework](https://github.com/labstack/echo) for the web framework
 * [flosch/pongo2](https://github.com/flosch/pongo2) for the template renderer
 
+## Contributors
+
+* [jeanphilippe-mh](https://github.com/jeanphilippe-mh)
+
 ## LICENCE
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
