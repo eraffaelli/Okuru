@@ -8,7 +8,7 @@ Passwords are encrypted using Fernet symmetric encryption, from the cryptography
 
 ## Requirements
 
-* Redis
+* Redis with **notify-keyspace-events KEA** set on redis.conf.
 * Golang (Not sure about the minimal version, I've used 1.12)
 
 ## Installation/How to use it
